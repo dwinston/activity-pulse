@@ -1,0 +1,100 @@
+<head>
+  <title>Activity Pulse</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  {{> navbar}}
+  <div class="container">
+    {{#if SGet "showHelp"}}{{> help}}{{/if}}
+    {{> activitiesList}}
+  </div>
+</body>
+
+<template name="activitiesList">
+  <ul class="list-group">
+      {{#if currentUser}}
+        <p>{{> editableActivity}}</p>
+      {{/if}}
+      {{#each activities}}
+        {{> activityItem}}
+      {{/each}}
+  </ul>
+</template>
+
+<template name="glyphicon">
+  <span class="glyphicon glyphicon-{{name}}"
+        aria-hidden="true"></span>
+</template>
+
+<template name="activityItem">
+  <li class="list-group-item list-group-item-{{state}}">
+    {{#if numBehind}}
+      <span class="badge">{{numBehind}} behind</span>
+    {{/if}}
+    <h4 class="list-group-item-heading">{{desc}}</h4>
+    <small>every {{recurrence}}. Last pulsed {{lastPulse}}.</small>
+    <p class="list-group-item-text">
+      <button class="btn btn-default pulse">Pulse</button>
+      {{#if prevLastPulse}}
+        <a class="undo-pulse" href="#">Undo</a>
+      {{/if}}
+      <button class="btn btn-default edit">
+        {{> glyphicon name="pencil"}}</button>
+      <button class="btn btn-default remove">
+        {{> glyphicon name="trash"}}</button>
+    </p>
+    {{#if SEql "editing" _id}}
+      {{> editableActivity}}
+    {{/if}}
+  </li>
+</template>
+
+<template name="editableActivity">
+  <form>
+    <input type="text" value="{{desc}}"
+           required="true" />
+    every <input type="number" min="1" max="60" step="1"
+                 value="{{recur.[0]}}" required="true" />
+    <select>
+      {{#each units}}
+        <option value="{{this.[0]}}" {{unitsSelected}}>{{this.[1]}}</option>
+      {{/each}}
+    </select>
+    <button class="btn btn-default" type="submit">Submit</button>
+  </form>
+</template>
+
+<template name="navbar">
+  <div class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Activity Pulse</a>
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>{{> toggleHelp}}</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {{> loginButtons}}
+      </ul>
+    </div>
+  </div>
+</template>
+
+<template name="toggleHelp">
+  <a href="#"> <span class="glyphicon glyphicon-question-sign"
+                     aria-hidden="true"></span> </a>
+</template>
+
+<template name="help">
+  <p class="lead">Add activities and say how often you want to "pulse" them. Pulse an activity when you do it / make progress on it. For example, you might want to take a nap every day, or make progress on a project every day.   <a class="hide-help small" href="#">(hide this)</a></p>
+  {{#unless currentUser}}
+    <p class="lead">Sign in/up at the top right to get started.</p>
+  {{/unless}}
+</template>
